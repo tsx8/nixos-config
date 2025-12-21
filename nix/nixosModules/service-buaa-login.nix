@@ -3,7 +3,7 @@
 }:
 
 {
-  imports = [ inputs.buaa-login.nixosModules.default ];
+  imports = [ inputs.buaa-login.nixosModules.buaa-login ];
 
   services.buaa-login = {
     enable = true;
