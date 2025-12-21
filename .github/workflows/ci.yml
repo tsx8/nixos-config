@@ -13,10 +13,11 @@ jobs:
   run-checks:
     name: "Run Flake Checks"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: "write"
+      contents: "read"
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: "Free Disk Space"
         uses: jlumbroso/free-disk-space@main
         with:
@@ -27,19 +28,13 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
-
       - name: "Set Swap Space"
         uses: pierotofy/set-swap-space@master
         with:
           swap-size-gb: 10
-
-      - name: "Install Nix"
-        uses: cachix/install-nix-action@v31
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: DeterminateSystems/flake-checker-action@main
       - name: "Run Nix Flake Check"
         env:
           GITHUB_ACTIONS: "true"
