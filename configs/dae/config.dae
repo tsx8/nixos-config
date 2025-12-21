@@ -44,21 +44,26 @@ group {
 }
 
 routing {
-  pname(NetworkManager) -> direct
+  dip(geoip:private) -> direct
   dip(224.0.0.0/3, 'ff00::/8') -> direct
-  l4proto(udp) && dport(443) -> block
+
+  pname(NetworkManager) -> direct
+
+  domain(suffix: blob.core.windows.net) -> sg
 
   domain(geosite:private) -> direct
   domain(geosite:category-games@cn) -> direct
-  domain(geosite:category-ads-all) -> block
   domain(geosite:category-ai-!cn) -> ai
-  domain(suffix: blob.core.windows.net) -> sg
   domain(geosite:microsoft@cn) -> direct
+  domain(geosite:category-ads-all) -> block
+
   domain(geosite:geolocation-!cn) -> proxy
   domain(geosite:geolocation-cn@!cn) -> proxy
   domain(geosite:geolocation-cn) -> direct
   domain(geosite:tld-cn) -> direct
   dip(geoip:cn) -> direct
+
+  l4proto(udp) && dport(443) -> block
 
   fallback: proxy
 }
