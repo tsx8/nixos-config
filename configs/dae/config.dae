@@ -1,0 +1,64 @@
+include {
+  './sub.dae'
+}
+
+global {
+  wan_interface: auto
+  auto_config_kernel_parameter: true
+}
+
+dns {
+  upstream {
+    alidns: 'udp://dns.alidns.com:53'
+    googledns: 'tcp+udp://dns.google:53'
+  }
+  routing {
+    request {
+      qname(geosite:category-ads-all) -> reject
+      fallback: asis
+    }
+    response {
+      upstream(googledns) -> accept
+      ip(geoip:private) && !qname(geosite:cn) -> googledns
+      fallback: accept
+    }
+  }
+}
+
+group {
+  proxy {
+    policy: min_moving_avg
+  }
+
+  sg {
+    filter: name(keyword: '新加坡')
+    policy: min_moving_avg
+  }
+
+  ai {
+    filter: name(keyword: '新加坡')
+    filter: name(keyword: '美国')
+    filter: name(keyword: '日本')
+    policy: min_moving_avg
+  }
+}
+
+routing {
+  pname(NetworkManager) -> direct
+  dip(224.0.0.0/3, 'ff00::/8') -> direct
+  l4proto(udp) && dport(443) -> block
+
+  domain(geosite:private) -> direct
+  domain(geosite:category-games@cn) -> direct
+  domain(geosite:category-ads-all) -> block
+  domain(geosite:category-ai-!cn) -> ai
+  domain(suffix: blob.core.windows.net) -> sg
+  domain(geosite:microsoft@cn) -> direct
+  domain(geosite:geolocation-!cn) -> proxy
+  domain(geosite:geolocation-cn@!cn) -> proxy
+  domain(geosite:geolocation-cn) -> direct
+  domain(geosite:tld-cn) -> direct
+  dip(geoip:cn) -> direct
+
+  fallback: proxy
+}

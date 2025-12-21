@@ -1,0 +1,9 @@
+keys:
+  - &admin_tsxb age12h883ms5983xxv4huquejdc6x8u5fqk6g0jfsrln38n4zc6q0gyqjkutzk
+  - &host_nixos age196a38nxfr3c20tps6xpdwrrks7s6q5tpkz98v9aa55wu6k34y96qyyygvw
+creation_rules:
+  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *admin_tsxb
+          - *host_nixos

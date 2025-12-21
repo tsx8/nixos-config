@@ -1,0 +1,27 @@
+name: "CI Checks"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**.nix"
+      - "flake.lock"
+
+jobs:
+  run-checks:
+    name: "Run Flake Checks"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Install Nix"
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Run Nix Flake Check"
+        run: nix flake check --all-systems --print-build-logs
