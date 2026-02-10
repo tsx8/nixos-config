@@ -1,0 +1,7 @@
+[mcp_servers.nixos]
+command = "uvx"
+args = ["mcp-nixos"]
+
+[mcp_servers.nixos.env]
+PYTHONUTF8 = "1"
+PYTHONIOENCODING = "utf-8"
