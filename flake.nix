@@ -3,13 +3,27 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    flakelight.url = "github:nix-community/flakelight";
 
-    statix.url = "github:oppiliappan/statix";
+    flakelight = {
+      url = "github:nix-community/flakelight";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    daeuniverse.url = "github:daeuniverse/flake.nix";
-    buaa-login.url = "github:tsx8/buaa-login";
-    nixos-cli.url = "github:nix-community/nixos-cli";
+    daeuniverse = {
+      url = "github:daeuniverse/flake.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    buaa-login = {
+      url = "github:tsx8/buaa-login";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixos-cli = {
+      url = "github:nix-community/nixos-cli";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.optnix.inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
