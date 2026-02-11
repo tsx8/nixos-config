@@ -38,7 +38,7 @@
   };
 
   home.activation.kwinFcitx5 = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kwinrc --group Wayland --key InputMethod "/etc/profiles/per-user/${config.home.username}/share/applications/fcitx5-wayland-launcher.desktop"
+    run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kwinrc --group Wayland --key InputMethod "${config.home.profileDirectory}/share/applications/fcitx5-wayland-launcher.desktop"
     run ${pkgs.kdePackages.kconfig}/bin/kwriteconfig6 --file kwinrc --group Wayland --key VirtualKeyboardEnabled true
   '';
 }
