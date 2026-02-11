@@ -5,7 +5,6 @@
   programs.firefox.enable = true;
 
   home.packages = with pkgs; [
-    moonlight-qt
     sops
     yek
   ];
