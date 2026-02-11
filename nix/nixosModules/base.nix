@@ -1,6 +1,7 @@
 { pkgs
 , inputs
 , username
+, config
 , ...
 }:
 
@@ -74,7 +75,7 @@
     users.${username} = {
       home = {
         inherit username;
-        homeDirectory = "/home/${username}";
+        homeDirectory = config.users.users.${username}.home;
         stateVersion = "25.11";
       };
     };
@@ -99,7 +100,7 @@
         mode = "0600";
       };
       github-ssh-key = {
-        path = "/home/${username}/.ssh/id_github";
+        path = "${config.users.users.${username}.home}/.ssh/id_github";
         owner = username;
         mode = "0600";
       };

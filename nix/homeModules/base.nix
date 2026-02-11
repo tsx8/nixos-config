@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, username, config, ... }:
 
 {
 
@@ -18,7 +18,7 @@
           hostname = "ssh.github.com";
           port = 443;
           user = "git";
-          identityFile = "/home/${username}/.ssh/id_github";
+          identityFile = "${config.home.homeDirectory}/.ssh/id_github";
         };
         "*" = {
           extraOptions = {
