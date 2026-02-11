@@ -37,7 +37,7 @@
   };
 
   outputs =
-    { self, flakelight, ... }@inputs:
+    { flakelight, ... }@inputs:
     let
       username = "tsxb";
     in
@@ -50,6 +50,7 @@
 
       checks = pkgs: {
         statix = "${pkgs.statix}/bin/statix check";
+        deadnix = "${pkgs.deadnix}/bin/deadnix --fail flake.nix nix";
       };
     };
 }
