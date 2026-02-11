@@ -8,6 +8,9 @@ on:
       - "**.nix"
       - "flake.lock"
       - ".github/workflows/**"
+      - "configs/**"
+      - "secrets/**"
+      - ".sops.yaml"
 
 jobs:
   run-checks:
