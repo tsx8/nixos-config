@@ -4,6 +4,9 @@
 , ...
 }:
 
+let
+  buaaLoginEnabled = lib.attrByPath [ "services" "buaa-login" "enable" ] false config;
+in
 {
   imports = [ inputs.daeuniverse.nixosModules.dae ];
 
@@ -12,12 +15,10 @@
     configFile = "/etc/dae/config.dae";
   };
 
-  systemd.services.dae =
-    lib.mkIf ((builtins.hasAttr "buaa-login" config.services) && config.services.buaa-login.enable)
-      {
-        after = [ "buaa-login.service" ];
-        wants = [ "buaa-login.service" ];
-      };
+  systemd.services.dae = lib.mkIf buaaLoginEnabled {
+    after = [ "buaa-login.service" ];
+    wants = [ "buaa-login.service" ];
+  };
 
   environment.etc."dae/config.dae" = {
     source = ../../configs/dae/config.dae;
