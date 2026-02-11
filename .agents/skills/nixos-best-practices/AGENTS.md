@@ -1,6 +1,7 @@
 # NixOS Configuration Best Practices
 
-Complete guide for configuring NixOS systems with flakes, managing overlays, and structuring configurations.
+Complete guide for configuring NixOS systems with flakes, managing overlays, and
+structuring configurations.
 
 ## Table of Contents
 
@@ -18,15 +19,18 @@ Complete guide for configuring NixOS systems with flakes, managing overlays, and
 
 ## Overview
 
-**Core principle:** Understand the interaction between NixOS system configuration and Home Manager overlays.
+**Core principle:** Understand the interaction between NixOS system
+configuration and Home Manager overlays.
 
-When `useGlobalPkgs = true`, overlays must be defined at the NixOS configuration level, not in Home Manager configuration files.
+When `useGlobalPkgs = true`, overlays must be defined at the NixOS configuration
+level, not in Home Manager configuration files.
 
 ---
 
 ## When to Use
 
 **Use when:**
+
 - Configuring NixOS with flakes and Home Manager
 - Adding overlays that don't seem to apply
 - Using `useGlobalPkgs = true` with custom overlays
@@ -35,6 +39,7 @@ When `useGlobalPkgs = true`, overlays must be defined at the NixOS configuration
 - Confused about where to define overlays
 
 **Don't use for:**
+
 - Packaging new software (use nix-packaging-best-practices)
 - Simple package installation without overlays
 - NixOS module development (see NixOS module documentation)
@@ -45,11 +50,16 @@ When `useGlobalPkgs = true`, overlays must be defined at the NixOS configuration
 
 ### Why This Matters
 
-When using Home Manager with NixOS, the `useGlobalPkgs` setting determines where overlay definitions must be placed. Defining overlays in the wrong location means they simply don't apply, leading to "package not found" errors even when the overlay syntax is correct.
+When using Home Manager with NixOS, the `useGlobalPkgs` setting determines where
+overlay definitions must be placed. Defining overlays in the wrong location
+means they simply don't apply, leading to "package not found" errors even when
+the overlay syntax is correct.
 
 ### The Problem
 
-When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance. Overlays defined in `home.nix` are ignored because Home Manager isn't creating its own `pkgs` - it's using the system one.
+When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance.
+Overlays defined in `home.nix` are ignored because Home Manager isn't creating
+its own `pkgs` - it's using the system one.
 
 ### Incorrect: Overlay in home.nix with useGlobalPkgs=true
 
@@ -73,7 +83,9 @@ When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance. O
 }
 ```
 
-**Why it fails:** When `useGlobalPkgs = true`, the `nixpkgs.overlays` line in `home.nix` has no effect. Home Manager isn't creating its own `pkgs`, so it can't apply overlays to one.
+**Why it fails:** When `useGlobalPkgs = true`, the `nixpkgs.overlays` line in
+`home.nix` has no effect. Home Manager isn't creating its own `pkgs`, so it
+can't apply overlays to one.
 
 ### Correct: Overlay in host home-manager block
 
@@ -98,7 +110,9 @@ When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance. O
 }
 ```
 
-**Why it works:** The overlay is defined where Home Manager configures the `pkgs` instance it will use. When `useGlobalPkgs = true`, this means the overlay is applied to the system's package set.
+**Why it works:** The overlay is defined where Home Manager configures the
+`pkgs` instance it will use. When `useGlobalPkgs = true`, this means the overlay
+is applied to the system's package set.
 
 ### Alternative: Set useGlobalPkgs=false
 
@@ -124,16 +138,18 @@ If you want to define overlays in `home.nix`, set `useGlobalPkgs = false`:
 }
 ```
 
-**Trade-off:** This creates a separate package set for Home Manager, which means packages are built twice (once for system, once for Home Manager). Only use this when you truly need separate package sets.
+**Trade-off:** This creates a separate package set for Home Manager, which means
+packages are built twice (once for system, once for Home Manager). Only use this
+when you truly need separate package sets.
 
 ### Decision Matrix
 
-| Your Need | useGlobalPkgs | Overlay Location |
-|-----------|---------------|------------------|
-| Single-user system, efficiency | `true` | Host home-manager block |
-| Multi-user, different packages per user | `false` | User's home.nix |
-| Custom packages system-wide | `true` | System nixpkgs.overlays |
-| Quick prototype | `false` | User's home.nix |
+| Your Need                               | useGlobalPkgs | Overlay Location        |
+| --------------------------------------- | ------------- | ----------------------- |
+| Single-user system, efficiency          | `true`        | Host home-manager block |
+| Multi-user, different packages per user | `false`       | User's home.nix         |
+| Custom packages system-wide             | `true`        | System nixpkgs.overlays |
+| Quick prototype                         | `false`       | User's home.nix         |
 
 ---
 
@@ -290,7 +306,8 @@ nixos-config/
 }
 ```
 
-**Important:** Don't edit `hardware-configuration.nix` manually. It's generated by `nixos-generate-config` and should be replaced when hardware changes.
+**Important:** Don't edit `hardware-configuration.nix` manually. It's generated
+by `nixos-generate-config` and should be replaced when hardware changes.
 
 ---
 
@@ -299,6 +316,7 @@ nixos-config/
 ### System vs User Packages
 
 **System Packages (NixOS)** - Use for:
+
 - System services (servers, daemons)
 - Packages needed by all users
 - Hardware-related packages (drivers, firmware)
@@ -316,6 +334,7 @@ nixos-config/
 ```
 
 **User Packages (Home Manager)** - Use for:
+
 - User-specific applications
 - Desktop applications
 - Development tools (user-specific)
@@ -404,7 +423,8 @@ outputs = { self, nixpkgs, home-manager, ... }@inputs:
 
 **Symptom:** Hardware changes lost after running `nixos-generate-config`.
 
-**Solution:** Put custom config in `default.nix`, not `hardware-configuration.nix`.
+**Solution:** Put custom config in `default.nix`, not
+`hardware-configuration.nix`.
 
 ### Mistake 4: Duplicate Package Declarations
 
@@ -451,7 +471,8 @@ inputs = {
 
 ### General Approach
 
-1. **Read error messages completely** - They usually tell you exactly what's wrong
+1. **Read error messages completely** - They usually tell you exactly what's
+   wrong
 2. **Verify syntax** - Check for missing brackets, quotes, commas
 3. **Validate config** - Use `nixos-rebuild test` first
 4. **Check scope** - Is overlay/module in correct location?
@@ -462,17 +483,20 @@ inputs = {
 **"undefined variable 'inputs'"**
 
 Add to flake.nix:
+
 ```nix
 specialArgs = { inherit inputs; };
 ```
 
 **"attribute 'package-name' not found"**
 
-Check if overlay is defined in correct location based on `useGlobalPkgs` setting.
+Check if overlay is defined in correct location based on `useGlobalPkgs`
+setting.
 
 **"error: The option 'some.option' does not exist"**
 
 Search for option:
+
 ```bash
 nixos-options | grep some-option
 ```
@@ -480,6 +504,7 @@ nixos-options | grep some-option
 **"infinite recursion"**
 
 Use --show-trace:
+
 ```bash
 nixos-rebuild build --flake .#hostname --show-trace
 ```
@@ -516,18 +541,22 @@ nixos-rebuild switch --flake .#hostname  # Persistent
 
 ## Real-World Impact
 
-Following these best practices prevents the most common NixOS configuration issues:
+Following these best practices prevents the most common NixOS configuration
+issues:
 
 **Before:**
+
 - Users spend hours debugging why overlays don't apply
 - Configuration is duplicated across hosts
 - Changes don't apply after editing files
 - Confusion about where to define overlays
 
 **After:**
+
 - Clear understanding of overlay scope
 - Modular, maintainable configuration structure
 - Predictable behavior
 - Easy debugging when issues arise
 
-The overlay scope issue alone accounts for ~80% of NixOS + Home Manager configuration problems encountered by users.
+The overlay scope issue alone accounts for ~80% of NixOS + Home Manager
+configuration problems encountered by users.

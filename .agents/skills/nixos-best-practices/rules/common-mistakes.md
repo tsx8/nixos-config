@@ -5,20 +5,23 @@ impactDescription: Prevents the most frequently made configuration errors
 tags: mistakes,pitfalls,errors,checklist
 ---
 
-
 ## Why This Matters
 
-Understanding common mistakes helps avoid them, saving time and preventing configuration errors.
+Understanding common mistakes helps avoid them, saving time and preventing
+configuration errors.
 
 ## Mistake 1: Overlay in Wrong Location
 
 ### Symptom
+
 Package not found even though overlay is defined.
 
 ### Cause
+
 Overlay defined in `home.nix` when `useGlobalPkgs = true`.
 
 ### Solution
+
 Move overlay to host's home-manager configuration block.
 
 ```nix
@@ -40,12 +43,15 @@ Move overlay to host's home-manager configuration block.
 ## Mistake 2: Forgetting specialArgs
 
 ### Symptom
+
 `undefined variable 'inputs'` error.
 
 ### Cause
+
 Not passing `inputs` via `specialArgs`.
 
 ### Solution
+
 Add `specialArgs = { inherit inputs; }`.
 
 ```nix
@@ -72,12 +78,15 @@ outputs = { self, nixpkgs, home-manager, ... }@inputs:
 ## Mistake 3: Editing hardware-configuration.nix
 
 ### Symptom
+
 Hardware changes lost after running `nixos-generate-config`.
 
 ### Cause
+
 Manually editing generated file.
 
 ### Solution
+
 Put custom config in `default.nix`, not `hardware-configuration.nix`.
 
 ```nix
@@ -106,12 +115,15 @@ Put custom config in `default.nix`, not `hardware-configuration.nix`.
 ## Mistake 4: Duplicate Package Declarations
 
 ### Symptom
+
 Package installed multiple times or conflicts.
 
 ### Cause
+
 Same package in both system and Home Manager config.
 
 ### Solution
+
 Install in appropriate location only.
 
 ```nix
@@ -132,12 +144,15 @@ home.packages = with pkgs; [ firefox ];
 ## Mistake 5: Not Following nixpkgs
 
 ### Symptom
+
 Slow builds, inconsistent packages.
 
 ### Cause
+
 Multiple independent nixpkgs instances.
 
 ### Solution
+
 Use `.follows` for dependency inputs.
 
 ```nix
@@ -161,12 +176,15 @@ inputs = {
 ## Mistake 6: Mixing System and User Concerns
 
 ### Symptom
+
 User-specific config in system files or vice versa.
 
 ### Cause
+
 Not understanding NixOS vs Home Manager responsibilities.
 
 ### Solution
+
 System config in NixOS, user config in Home Manager.
 
 ```nix
@@ -197,12 +215,15 @@ System config in NixOS, user config in Home Manager.
 ## Mistake 7: Forgetting to Rebuild
 
 ### Symptom
+
 Changes don't appear after editing config.
 
 ### Cause
+
 Editing config but not running rebuild.
 
 ### Solution
+
 Always rebuild after config changes.
 
 ```bash
@@ -219,12 +240,15 @@ sudo nixos-rebuild switch --flake .#hostname
 ## Mistake 8: Overriding systemPackages Multiple Times
 
 ### Symptom
+
 Some packages disappear after adding others.
 
 ### Cause
+
 Multiple `environment.systemPackages` assignments.
 
 ### Solution
+
 Use single list or mkBefore/mkAfter.
 
 ```nix
@@ -247,12 +271,15 @@ environment.systemPackages = mkAfter [ pkgs.htop ];
 ## Mistake 9: Hardcoding Paths
 
 ### Symptom
+
 Config breaks on different machines.
 
 ### Cause
+
 Using absolute paths instead of Nix paths.
 
 ### Solution
+
 Use relative paths or Nix constructs.
 
 ```nix
@@ -282,12 +309,15 @@ Use relative paths or Nix constructs.
 ## Mistake 10: Not Using Flake References
 
 ### Symptom
+
 Can't use packages from flake inputs.
 
 ### Cause
+
 Not passing inputs or using wrong reference.
 
 ### Solution
+
 Use `inputs.*` syntax.
 
 ```nix

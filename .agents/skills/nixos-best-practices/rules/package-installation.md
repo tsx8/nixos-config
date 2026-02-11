@@ -1,20 +1,22 @@
 ---
 title: Package Installation Best Practices
 impact: HIGH
-impactDescription: Avoids conflicts and confusion about where to install packages
+impactDescription:
+  Avoids conflicts and confusion about where to install packages
 tags: packages,system,user,home-manager
 ---
 
-
 ## Why This Matters
 
-Knowing where and how to install packages prevents conflicts, ensures proper updates, and maintains separation between system and user packages.
+Knowing where and how to install packages prevents conflicts, ensures proper
+updates, and maintains separation between system and user packages.
 
 ## System vs User Packages
 
 ### System Packages (NixOS)
 
 Use for:
+
 - System services (servers, daemons)
 - Packages needed by all users
 - Hardware-related packages (drivers, firmware)
@@ -36,6 +38,7 @@ Use for:
 ### User Packages (Home Manager)
 
 Use for:
+
 - User-specific applications
 - Desktop applications
 - Development tools (user-specific)
@@ -255,10 +258,10 @@ nix-locate bin/vim
 
 ## Quick Reference
 
-| Package Type | Location | Example |
-|-------------|----------|---------|
-| System service | system config | `virtualisation.docker.enable = true` |
-| System utility | system config | `environment.systemPackages = [ vim ]` |
-| User app | Home Manager | `home.packages = [ vscode ]` |
-| Development tool | Either (user usually) | `home.packages = [ nodejs ]` |
-| Driver/firmware | system config | `hardware.graphics.enable = true` |
+| Package Type     | Location              | Example                                |
+| ---------------- | --------------------- | -------------------------------------- |
+| System service   | system config         | `virtualisation.docker.enable = true`  |
+| System utility   | system config         | `environment.systemPackages = [ vim ]` |
+| User app         | Home Manager          | `home.packages = [ vscode ]`           |
+| Development tool | Either (user usually) | `home.packages = [ nodejs ]`           |
+| Driver/firmware  | system config         | `hardware.graphics.enable = true`      |

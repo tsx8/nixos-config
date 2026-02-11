@@ -5,16 +5,17 @@ impactDescription: Systematic debugging approach for configuration issues
 tags: debugging,errors,troubleshooting,verification
 ---
 
-
 ## Why This Matters
 
-Knowing how to systematically debug NixOS configurations saves hours of frustration and prevents making random changes hoping something works.
+Knowing how to systematically debug NixOS configurations saves hours of
+frustration and prevents making random changes hoping something works.
 
 ## General Approach
 
 Follow this order when debugging:
 
-1. **Read error messages completely** - They usually tell you exactly what's wrong
+1. **Read error messages completely** - They usually tell you exactly what's
+   wrong
 2. **Verify syntax** - Check for missing brackets, quotes, commas
 3. **Validate config** - Use `nixos-rebuild test` first
 4. **Check scope** - Is overlay/module in correct location?
@@ -27,6 +28,7 @@ Follow this order when debugging:
 **Cause:** `inputs` not passed via `specialArgs`.
 
 **Fix:**
+
 ```nix
 # flake.nix
 outputs = { self, nixpkgs, ... }@inputs:
@@ -43,6 +45,7 @@ outputs = { self, nixpkgs, ... }@inputs:
 **Cause:** Package doesn't exist, or overlay not applied.
 
 **Debug:**
+
 ```bash
 # Check if package exists in nixpkgs
 nix search nixpkgs package-name
@@ -57,7 +60,9 @@ nix-repl> myhost.config.environment.systemPackages
 ```
 
 **Fix:**
-- If overlay issue: Move to correct location (see [overlay-scope.md](overlay-scope.md))
+
+- If overlay issue: Move to correct location (see
+  [overlay-scope.md](overlay-scope.md))
 - If missing package: Use correct package name or add overlay
 
 ### "error: The option 'some.option' does not exist"
@@ -65,6 +70,7 @@ nix-repl> myhost.config.environment.systemPackages
 **Cause:** Typo in option name, or option not available in your nixpkgs version.
 
 **Debug:**
+
 ```bash
 # Search for option
 nixos-options | grep some-option
@@ -74,6 +80,7 @@ nix eval .#nixosConfigurations.myhost.config.some.option
 ```
 
 **Fix:**
+
 - Check option name spelling
 - Verify nixpkgs version has this option
 - Read option documentation for correct usage
@@ -83,12 +90,14 @@ nix eval .#nixosConfigurations.myhost.config.some.option
 **Cause:** Circular dependency in config.
 
 **Debug:**
+
 ```bash
 # Use --show-trace to see where
 nixos-rebuild build --flake .#hostname --show-trace
 ```
 
 **Fix:**
+
 - Look for mutual dependencies
 - Use `mkBefore`/`mkAfter` for ordering
 - Break circular reference
@@ -98,6 +107,7 @@ nixos-rebuild build --flake .#hostname --show-trace
 **Cause:** Local changes or outdated lock file.
 
 **Fix:**
+
 ```bash
 # Update flake lock
 nix flake update
@@ -113,11 +123,13 @@ nix flake lock update-input nixpkgs
 **Debug steps:**
 
 1. Check overlay definition:
+
 ```bash
 nix eval .#nixosConfigurations.myhost.config.nixpkgs.overlays
 ```
 
 2. Check overlay location:
+
 ```bash
 # If useGlobalPkgs = true, overlay should be here:
 grep -r "nixpkgs.overlays" hosts/myhost/default.nix
@@ -127,6 +139,7 @@ grep -r "nixpkgs.overlays" home-manager/home.nix
 ```
 
 3. Verify overlay input:
+
 ```bash
 nix flake metadata
 # Look for your overlay input
@@ -141,31 +154,37 @@ nix flake metadata
 **Debug steps:**
 
 1. Verify rebuild ran successfully:
+
 ```bash
 sudo nixos-rebuild switch --flake .#hostname
 # Look for "success" message
 ```
 
 2. Check current generation:
+
 ```bash
 sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
 ```
 
 3. Verify new generation is active:
+
 ```bash
 sudo nixos-version
 # Should show timestamp of recent rebuild
 ```
 
 4. Check if option actually changed:
+
 ```bash
 nix eval .#nixosConfigurations.myhost.config.some.option
 ```
 
 **Fix:**
+
 - Ensure rebuild succeeded
 - Check if service needs restart: `systemctl restart service-name`
-- For Home Manager: `home-manager switch` (or `sudo nixos-rebuild switch` if integrated)
+- For Home Manager: `home-manager switch` (or `sudo nixos-rebuild switch` if
+  integrated)
 
 ## Build Fails with "store collision"
 
@@ -174,6 +193,7 @@ nix eval .#nixosConfigurations.myhost.config.some.option
 **Cause:** Usually duplicate package declarations or conflicting modules.
 
 **Fix:**
+
 - Remove duplicate package declarations
 - Check for conflicting modules
 - Use `--show-trace` to identify conflicting packages
@@ -262,6 +282,7 @@ When asking for help, provide:
 6. **Expected vs actual behavior**
 
 Useful commands:
+
 ```bash
 # Show system info
 nixos-version

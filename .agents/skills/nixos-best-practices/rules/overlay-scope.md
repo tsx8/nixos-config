@@ -5,14 +5,18 @@ impactDescription: The most common issue: overlays don't apply with useGlobalPkg
 tags: overlay,useglobalpkgs,home-manager,scope
 ---
 
-
 ## Why This Matters
 
-When using Home Manager with NixOS, the `useGlobalPkgs` setting determines where overlay definitions must be placed. Defining overlays in the wrong location means they simply don't apply, leading to "package not found" errors even when the overlay syntax is correct.
+When using Home Manager with NixOS, the `useGlobalPkgs` setting determines where
+overlay definitions must be placed. Defining overlays in the wrong location
+means they simply don't apply, leading to "package not found" errors even when
+the overlay syntax is correct.
 
 ## The Problem
 
-When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance. Overlays defined in `home.nix` are ignored because Home Manager isn't creating its own `pkgs` - it's using the system one.
+When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance.
+Overlays defined in `home.nix` are ignored because Home Manager isn't creating
+its own `pkgs` - it's using the system one.
 
 ## Incorrect: Overlay in home.nix with useGlobalPkgs=true
 
@@ -36,7 +40,9 @@ When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance. O
 }
 ```
 
-**Why it fails:** When `useGlobalPkgs = true`, the `nixpkgs.overlays` line in `home.nix` has no effect. Home Manager isn't creating its own `pkgs`, so it can't apply overlays to one.
+**Why it fails:** When `useGlobalPkgs = true`, the `nixpkgs.overlays` line in
+`home.nix` has no effect. Home Manager isn't creating its own `pkgs`, so it
+can't apply overlays to one.
 
 ## Correct: Overlay in host home-manager block
 
@@ -61,7 +67,9 @@ When `useGlobalPkgs = true`, Home Manager uses NixOS's global `pkgs` instance. O
 }
 ```
 
-**Why it works:** The overlay is defined where Home Manager configures the `pkgs` instance it will use. When `useGlobalPkgs = true`, this means the overlay is applied to the system's package set.
+**Why it works:** The overlay is defined where Home Manager configures the
+`pkgs` instance it will use. When `useGlobalPkgs = true`, this means the overlay
+is applied to the system's package set.
 
 ## Alternative: Set useGlobalPkgs=false
 
@@ -87,16 +95,18 @@ If you want to define overlays in `home.nix`, set `useGlobalPkgs = false`:
 }
 ```
 
-**Trade-off:** This creates a separate package set for Home Manager, which means packages are built twice (once for system, once for Home Manager). Only use this when you truly need separate package sets.
+**Trade-off:** This creates a separate package set for Home Manager, which means
+packages are built twice (once for system, once for Home Manager). Only use this
+when you truly need separate package sets.
 
 ## Decision Matrix
 
-| Your Need | useGlobalPkgs | Overlay Location |
-|-----------|---------------|------------------|
-| Single-user system, efficiency | `true` | Host home-manager block |
-| Multi-user, different packages per user | `false` | User's home.nix |
-| Custom packages system-wide | `true` | System nixpkgs.overlays |
-| Quick prototype | `false` | User's home.nix |
+| Your Need                               | useGlobalPkgs | Overlay Location        |
+| --------------------------------------- | ------------- | ----------------------- |
+| Single-user system, efficiency          | `true`        | Host home-manager block |
+| Multi-user, different packages per user | `false`       | User's home.nix         |
+| Custom packages system-wide             | `true`        | System nixpkgs.overlays |
+| Quick prototype                         | `false`       | User's home.nix         |
 
 ## Verification
 
@@ -117,14 +127,18 @@ nix-repl> homeConfigs.hostname.config.home-manager.users.username.pkgs.package-n
 
 ## Common Mistakes
 
-1. **Adding overlay both places**: Don't define the same overlay in both host config AND home.nix. It will apply twice and may cause conflicts.
+1. **Adding overlay both places**: Don't define the same overlay in both host
+   config AND home.nix. It will apply twice and may cause conflicts.
 
-2. **Forgetting to pass inputs**: If your overlay needs `inputs.*`, ensure `inputs` is in `extraSpecialArgs`:
+2. **Forgetting to pass inputs**: If your overlay needs `inputs.*`, ensure
+   `inputs` is in `extraSpecialArgs`:
+
    ```nix
    home-manager.extraSpecialArgs = { inherit inputs; };
    ```
 
-3. **Not rebuilding system**: Overlays defined in host config require full system rebuild, not just `home-manager switch`.
+3. **Not rebuilding system**: Overlays defined in host config require full
+   system rebuild, not just `home-manager switch`.
 
 ## References
 

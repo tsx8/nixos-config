@@ -5,10 +5,11 @@ impactDescription: Foundation of flake-based NixOS configurations
 tags: flakes,special-args,inputs,multiple-hosts
 ---
 
-
 ## Why This Matters
 
-A well-structured flake.nix makes it easy to manage multiple hosts, share common configurations, and maintain the codebase. Poor structure leads to duplication and confusion.
+A well-structured flake.nix makes it easy to manage multiple hosts, share common
+configurations, and maintain the codebase. Poor structure leads to duplication
+and confusion.
 
 ## Core Structure
 
@@ -149,13 +150,18 @@ Usage in host config:
 
 ## Common Mistakes
 
-1. **Not using @inputs pattern**: Forgetting to capture all inputs in a set makes it impossible to reference new inputs without updating the function signature.
+1. **Not using @inputs pattern**: Forgetting to capture all inputs in a set
+   makes it impossible to reference new inputs without updating the function
+   signature.
 
-2. **Missing specialArgs**: Inputs won't be available in modules without `specialArgs = { inherit inputs; }`.
+2. **Missing specialArgs**: Inputs won't be available in modules without
+   `specialArgs = { inherit inputs; }`.
 
-3. **Hardcoded system**: Avoid hardcoding `x86_64-linux` multiple times. Define once and reuse.
+3. **Hardcoded system**: Avoid hardcoding `x86_64-linux` multiple times. Define
+   once and reuse.
 
-4. **Not following nixpkgs**: Leads to multiple nixpkgs evaluations, slower builds, and potential inconsistencies.
+4. **Not following nixpkgs**: Leads to multiple nixpkgs evaluations, slower
+   builds, and potential inconsistencies.
 
 ## Quick Template
 

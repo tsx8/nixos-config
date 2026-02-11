@@ -1,6 +1,8 @@
 ---
 name: nix-best-practices
-description: Nix patterns for flakes, overlays, unfree handling, and binary overlays. Use when working with flake.nix or shell.nix.
+description:
+  Nix patterns for flakes, overlays, unfree handling, and binary overlays. Use
+  when working with flake.nix or shell.nix.
 ---
 
 # Nix Best Practices
@@ -36,7 +38,8 @@ Standard flake.nix structure:
 
 ## Follows Pattern (Avoid Duplicate Nixpkgs)
 
-When adding overlay inputs, use `follows` to share the parent nixpkgs and avoid downloading multiple versions:
+When adding overlay inputs, use `follows` to share the parent nixpkgs and avoid
+downloading multiple versions:
 
 ```nix
 inputs = {
@@ -82,7 +85,8 @@ in
 
 ### Option 1: nixpkgs-unfree (Recommended for Teams)
 
-Use numtide/nixpkgs-unfree for EULA-licensed packages without requiring user config:
+Use numtide/nixpkgs-unfree for EULA-licensed packages without requiring user
+config:
 
 ```nix
 inputs = {
@@ -119,11 +123,13 @@ let
 in
 ```
 
-Note: `config.allowUnfree` in flake.nix doesn't work with `nix develop` - use nixpkgs-unfree or user config.
+Note: `config.allowUnfree` in flake.nix doesn't work with `nix develop` - use
+nixpkgs-unfree or user config.
 
 ## Creating Binary Overlay Repos
 
-When nixpkgs builds a community version lacking features (common with open-core tools), create an overlay that fetches official binaries.
+When nixpkgs builds a community version lacking features (common with open-core
+tools), create an overlay that fetches official binaries.
 
 ### Pattern (see 0xBigBoss/atlas-overlay, 0xBigBoss/bun-overlay)
 
@@ -212,6 +218,7 @@ nix hash to-sri --type sha256 <base32-hash>
 ```
 
 Or use SRI directly:
+
 ```bash
 nix-prefetch-url --type sha256 https://example.com/tool-linux-amd64-v1.0.0
 ```
@@ -315,6 +322,7 @@ nix run .#packageName
 ### "unexpected argument" Error
 
 All inputs must be listed in outputs function:
+
 ```nix
 # Wrong
 outputs = { self, nixpkgs }: ...
@@ -326,6 +334,7 @@ outputs = { self, nixpkgs, other-input, ... }: ...
 ### Unfree Package Errors with nix develop
 
 `config.allowUnfree` in flake.nix doesn't propagate to `nix develop`. Use:
+
 1. nixpkgs-unfree input (recommended)
 2. User's `~/.config/nixpkgs/config.nix`
 3. `NIXPKGS_ALLOW_UNFREE=1 nix develop --impure`
@@ -337,6 +346,7 @@ Use `follows` to chain inputs to a single nixpkgs source.
 ### Overlay Not Applied
 
 Ensure overlay is in the `overlays` list when importing nixpkgs:
+
 ```nix
 pkgs = import nixpkgs {
   inherit system;
@@ -346,4 +356,5 @@ pkgs = import nixpkgs {
 
 ### Hash Mismatch
 
-Re-fetch with `nix-prefetch-url` and update the hash. Hashes change when upstream updates binaries at the same URL.
+Re-fetch with `nix-prefetch-url` and update the hash. Hashes change when
+upstream updates binaries at the same URL.
